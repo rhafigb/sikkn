@@ -11,31 +11,33 @@ import {
   Eye, 
   EyeOff, 
   ArrowRight,
-  CheckCircle2,
   Briefcase,
-  User
+  User,
+  CheckCircle2,
+  ShieldCheck
 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   
-  // State untuk Role (mahasiswa | dosen)
+  // State
   const [role, setRole] = useState<'mahasiswa' | 'dosen'>('mahasiswa');
-  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState(''); 
+  const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // SIMULASI LOGIN
+    // SIMULASI LOGIN & ROUTING
     setTimeout(() => {
       setIsLoading(false);
       
-      // Logika Routing Berdasarkan Tab yang Dipilih
-      if (role === 'dosen') {
+      if (email.toLowerCase().includes('admin')) {
+        router.push('/admin');
+      } else if (role === 'dosen') {
         router.push('/dosen');
       } else {
         router.push('/dashboard');
@@ -44,32 +46,38 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-white selection:bg-unsil-500 selection:text-white">
       
-      {/* SECTION KIRI: FORMULIR */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 xl:p-24 relative z-10">
+      {/* ========================================
+          SECTION KIRI: FORMULIR
+         ======================================== */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 xl:p-24 relative z-10 overflow-y-auto">
+        
+        {/* Header Link */}
         <div>
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-unsil-600 transition-colors mb-8 group">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-unsil-600 transition-colors mb-8 group font-medium">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Kembali ke Beranda
           </Link>
         </div>
 
+        {/* Main Content */}
         <div className="max-w-md w-full mx-auto">
           <div className="mb-8">
             <div className="inline-flex items-center gap-2 mb-6">
-              <div className="bg-unsil-500 p-2 rounded-lg text-white">
+              <div className="bg-unsil-500 p-2 rounded-xl text-white shadow-lg shadow-unsil-500/20">
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <span className="font-bold text-xl text-slate-900">SIM-KKN</span>
+              <span className="font-extrabold text-2xl text-slate-900 tracking-tight">SIM-KKN</span>
             </div>
-            <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Selamat Datang</h1>
-            <p className="text-slate-500">Silakan masuk sesuai peran akademik Anda.</p>
+            <h1 className="text-3xl font-black text-slate-900 mb-2">Selamat Datang</h1>
+            <p className="text-slate-500">Silakan masuk menggunakan akun akademik Anda.</p>
           </div>
 
           {/* ROLE SWITCHER / TABS */}
           <div className="bg-slate-100 p-1.5 rounded-xl flex mb-8">
             <button 
+              type="button"
               onClick={() => setRole('mahasiswa')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 ${
                 role === 'mahasiswa' 
@@ -81,6 +89,7 @@ export default function LoginPage() {
               Mahasiswa
             </button>
             <button 
+              type="button"
               onClick={() => setRole('dosen')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 ${
                 role === 'dosen' 
@@ -93,9 +102,11 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Input Email/ID */}
+            <div className="space-y-1.5">
+              {/* Label dinamis tapi tinggi tetap sama */}
+              <label className="text-sm font-bold text-slate-700">
                 {role === 'mahasiswa' ? 'NPM atau Email Student' : 'NIDN atau Email Kampus'}
               </label>
               <div className="relative group">
@@ -106,21 +117,22 @@ export default function LoginPage() {
                   type="text" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`block w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
+                  className={`block w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all font-medium ${
                     role === 'dosen' 
                       ? 'focus:ring-blue-500/20 focus:border-blue-500' 
                       : 'focus:ring-unsil-500/20 focus:border-unsil-500'
                   }`}
-                  placeholder={role === 'mahasiswa' ? '197006001' : '0412345678'}
+                  placeholder={role === 'mahasiswa' ? 'Contoh: 197006001' : 'Contoh: 0412345678'}
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
+            {/* Input Password */}
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="text-sm font-semibold text-slate-700">Kata Sandi</label>
-                <a href="#" className={`text-sm font-medium hover:underline ${role === 'dosen' ? 'text-blue-600' : 'text-unsil-600'}`}>Lupa kata sandi?</a>
+                <label className="text-sm font-bold text-slate-700">Kata Sandi</label>
+                <a href="#" className={`text-sm font-bold hover:underline ${role === 'dosen' ? 'text-blue-600' : 'text-unsil-600'}`}>Lupa kata sandi?</a>
               </div>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -128,7 +140,9 @@ export default function LoginPage() {
                 </div>
                 <input 
                   type={showPassword ? "text" : "password"}
-                  className={`block w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`block w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all font-medium ${
                     role === 'dosen' 
                       ? 'focus:ring-blue-500/20 focus:border-blue-500' 
                       : 'focus:ring-unsil-500/20 focus:border-unsil-500'
@@ -146,10 +160,11 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Submit Button */}
             <button 
               type="submit" 
               disabled={isLoading}
-              className={`w-full text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed group ${
+              className={`w-full text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed group mt-2 ${
                 role === 'dosen' 
                   ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20' 
                   : 'bg-slate-900 hover:bg-slate-800 shadow-slate-900/20'
@@ -172,30 +187,34 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {role === 'mahasiswa' && (
-            <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-2">
-              <p className="text-slate-500 text-sm">
-                Belum punya akun?{' '}
-                <Link href="/register" className="font-bold text-unsil-600 hover:text-unsil-500">
-                  Daftar KKN Sekarang
-                </Link>
-              </p>
-            </div>
-          )}
+          {/* Footer Register Link (Stable Container) */}
+          {/* PERBAIKAN: Container tetap ada, hanya visibility yang berubah */}
+          <div className={`mt-8 text-center transition-opacity duration-300 ${role === 'mahasiswa' ? 'opacity-100' : 'opacity-0 invisible'}`}>
+            <p className="text-slate-500 text-sm">
+              Belum punya akun?{' '}
+              <Link href="/register" className="font-bold text-unsil-600 hover:text-unsil-500">
+                Daftar KKN Sekarang
+              </Link>
+            </p>
+          </div>
         </div>
 
+        {/* Footer Kecil */}
         <div className="text-xs text-slate-400 text-center lg:text-left mt-8">
           &copy; 2026 Universitas Siliwangi. Secure Login System.
         </div>
       </div>
 
-      {/* SECTION KANAN: VISUAL (Dinamis Berdasarkan Role) */}
+      {/* ========================================
+          SECTION KANAN: VISUAL & INFO
+         ======================================== */}
       <div className={`hidden lg:flex w-1/2 relative overflow-hidden items-center justify-center transition-colors duration-500 ${
         role === 'dosen' ? 'bg-slate-900' : 'bg-slate-50'
       }`}>
-        <div className="absolute inset-0 bg-grid-slate opacity-30"></div>
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] bg-size-[24px_24px] opacity-20"></div>
         
-        {/* Background Gradients */}
+        {/* Dynamic Gradients */}
         {role === 'mahasiswa' ? (
           <>
             <div className="absolute inset-0 bg-linear-to-tr from-slate-100/50 to-unsil-100/30"></div>
@@ -209,37 +228,43 @@ export default function LoginPage() {
           </>
         )}
 
+        {/* Info Card */}
         <div className="relative z-10 max-w-lg p-10">
-          <div className={`backdrop-blur-xl border p-8 rounded-3xl shadow-xl transition-all duration-500 ${
+          <div className={`backdrop-blur-xl border p-8 rounded-3xl shadow-2xl transition-all duration-500 transform hover:scale-[1.02] ${
             role === 'dosen' 
               ? 'bg-slate-800/60 border-slate-700 text-white' 
-              : 'bg-white/60 border-white/50 text-slate-900'
+              : 'bg-white/70 border-white/50 text-slate-900'
           }`}>
-            <h3 className="text-2xl font-bold mb-4">
-              {role === 'mahasiswa' ? 'Informasi Mahasiswa' : 'Akses Dosen Pembimbing'}
-            </h3>
+            <div className="flex items-center gap-3 mb-6">
+                <div className={`p-3 rounded-xl ${role === 'dosen' ? 'bg-blue-500/20 text-blue-400' : 'bg-unsil-500/20 text-unsil-600'}`}>
+                    {role === 'dosen' ? <ShieldCheck className="w-6 h-6" /> : <CheckCircle2 className="w-6 h-6" />}
+                </div>
+                <h3 className="text-xl font-bold">
+                  {role === 'mahasiswa' ? 'Informasi Mahasiswa' : 'Akses Dosen Pembimbing'}
+                </h3>
+            </div>
             
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <CheckCircle2 className={`w-5 h-5 mt-0.5 shrink-0 ${role === 'dosen' ? 'text-blue-400' : 'text-unsil-500'}`} />
-                <p className={`text-sm ${role === 'dosen' ? 'text-slate-300' : 'text-slate-600'}`}>
+                <div className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${role === 'dosen' ? 'bg-blue-400' : 'bg-unsil-500'}`}></div>
+                <p className={`text-sm leading-relaxed ${role === 'dosen' ? 'text-slate-300' : 'text-slate-600'}`}>
                   {role === 'mahasiswa' 
-                    ? 'Pastikan KRS semester ini sudah disetujui dosen wali sebelum login.' 
-                    : 'Gunakan NIDN untuk akses monitoring dan validasi logbook.'}
+                    ? 'Pastikan KRS semester ini sudah disetujui dosen wali sebelum melakukan login ke sistem.' 
+                    : 'Gunakan NIDN dan Password Akademik untuk akses monitoring kelompok dan validasi logbook.'}
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircle2 className={`w-5 h-5 mt-0.5 shrink-0 ${role === 'dosen' ? 'text-blue-400' : 'text-unsil-500'}`} />
-                <p className={`text-sm ${role === 'dosen' ? 'text-slate-300' : 'text-slate-600'}`}>
+                <div className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${role === 'dosen' ? 'bg-blue-400' : 'bg-unsil-500'}`}></div>
+                <p className={`text-sm leading-relaxed ${role === 'dosen' ? 'text-slate-300' : 'text-slate-600'}`}>
                    {role === 'mahasiswa' 
-                    ? 'Gunakan email student (@unsil.ac.id) untuk akses penuh.' 
-                    : 'Validasi nilai dapat dilakukan setelah periode logbook berakhir.'}
+                    ? 'Gunakan email student (@student.unsil.ac.id) untuk mendapatkan akses fitur penuh.' 
+                    : 'Validasi nilai akhir dapat dilakukan setelah periode pengisian logbook mahasiswa berakhir.'}
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircle2 className={`w-5 h-5 mt-0.5 shrink-0 ${role === 'dosen' ? 'text-blue-400' : 'text-unsil-500'}`} />
-                <p className={`text-sm ${role === 'dosen' ? 'text-slate-300' : 'text-slate-600'}`}>
-                  Jika mengalami kendala login, hubungi Helpdesk LPPM di Gedung Rektorat Lt. 2.
+                <div className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${role === 'dosen' ? 'bg-blue-400' : 'bg-unsil-500'}`}></div>
+                <p className={`text-sm leading-relaxed ${role === 'dosen' ? 'text-slate-300' : 'text-slate-600'}`}>
+                  Jika mengalami kendala login, silakan hubungi Helpdesk LPPM di Gedung Rektorat Lt. 2.
                 </p>
               </li>
             </ul>
